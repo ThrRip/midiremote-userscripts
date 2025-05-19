@@ -14,18 +14,24 @@
  * limitations under the License.
  */
 
-import { defineConfig } from 'eslint/config'
 import js from '@eslint/js'
 import ts from 'typescript-eslint'
 import stylistic from '@stylistic/eslint-plugin'
+import globals from 'globals'
 
-export default defineConfig([
+export default ts.config(
   js.configs.recommended,
   ts.configs.recommended,
   stylistic.configs.recommended,
   {
+    // Scripts used during development
+    files: ['dev/**/*.ts'],
+    languageOptions: {
+      globals: globals.node
+    }
+  },
+  {
     rules: {
-      'no-console': 'error',
       'require-await': 'error',
       '@typescript-eslint/ban-ts-comment': ['error', {
         'ts-expect-error': false,
@@ -51,4 +57,4 @@ export default defineConfig([
       '@stylistic/space-before-function-paren': ['error', 'always']
     }
   }
-])
+)

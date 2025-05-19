@@ -1,3 +1,10 @@
+### Project
+# Source code is pure TypeScript
+*.js
+
+# MIDI Remote API
+.api
+
 ### JetBrains IDE
 .idea/*
 !.idea/copyright/

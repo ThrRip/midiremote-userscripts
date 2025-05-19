@@ -1,0 +1,7 @@
+{
+  "include": ["dev/**/*.ts"],
+  "extends": "@tsconfig/node-lts/tsconfig.json",
+  "compilerOptions": {
+    "forceConsistentCasingInFileNames": true
+  }
+}
