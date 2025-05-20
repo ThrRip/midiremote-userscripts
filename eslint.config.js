@@ -20,6 +20,14 @@ import stylistic from '@stylistic/eslint-plugin'
 import globals from 'globals'
 
 export default ts.config(
+  {
+    ignores: [
+      // Source code is pure TypeScript
+      '**/*.js',
+      // Config files at workspace root should still be included
+      '!*.js'
+    ]
+  },
   js.configs.recommended,
   ts.configs.recommended,
   stylistic.configs.recommended,
@@ -28,6 +36,12 @@ export default ts.config(
     files: ['dev/**/*.ts'],
     languageOptions: {
       globals: globals.node
+    }
+  },
+  {
+    files: ['src/**/*.ts'],
+    rules: {
+      '@typescript-eslint/no-require-imports': 'off'
     }
   },
   {

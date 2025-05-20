@@ -9,6 +9,7 @@
   "author": "ThrRip <coding@thrrip.space>",
   "private": true,
   "scripts": {
+    "build": "tsc -p src",
     "postinstall": "tsc && node dev/setup-api.js"
   },
   "devDependencies": {

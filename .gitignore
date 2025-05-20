@@ -1,6 +1,11 @@
 ### Project
+# Build output
+dist/
+
 # Source code is pure TypeScript
 *.js
+# Config files at workspace root should still be included
+!/*.js
 
 # MIDI Remote API
 .api
