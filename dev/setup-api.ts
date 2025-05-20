@@ -17,9 +17,10 @@
 import assert from 'assert'
 
 import os from 'os'
-import child_process from 'child_process'
 import fs from 'fs'
 import path from 'path'
+
+import { getUserDocsPath } from './common.js'
 
 const platform = os.platform()
 
@@ -29,24 +30,7 @@ assert.ok(
   'API is not set up, and you may see TypeScript errors.'
 )
 
-const userDocsPath = (() => {
-  switch (platform) {
-    case 'win32':
-      // Get the path of the "Documents" directory with .NET methods in PowerShell
-      return child_process
-        .execSync(
-          'powershell -Command "' +
-            '$OutputEncoding = ' +
-              '[Console]::InputEncoding = [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new(); ' +
-            '[Environment]::GetFolderPath(\'MyDocuments\')' +
-          '"',
-          { encoding: 'utf8' }
-        )
-        .replace('\r\n', '')
-    case 'darwin':
-      return '~/Documents'
-  }
-})()
+const userDocsPath = getUserDocsPath(platform)
 
 const userDocsSteinbergItems = fs.readdirSync(path.join(userDocsPath, 'Steinberg'))
 assert.ok(
