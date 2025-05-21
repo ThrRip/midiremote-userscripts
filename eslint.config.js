@@ -14,26 +14,24 @@
  * limitations under the License.
  */
 
+import { fileURLToPath } from 'node:url'
+import { includeIgnoreFile } from '@eslint/compat'
+
 import js from '@eslint/js'
 import ts from 'typescript-eslint'
 import stylistic from '@stylistic/eslint-plugin'
 import globals from 'globals'
 
+const gitignorePath = fileURLToPath(new URL('./.gitignore', import.meta.url))
+
 export default ts.config(
-  {
-    ignores: [
-      // Source code is pure TypeScript
-      '**/*.js',
-      // Config files at workspace root should still be included
-      '!*.js'
-    ]
-  },
+  includeIgnoreFile(gitignorePath),
   js.configs.recommended,
   ts.configs.recommended,
   stylistic.configs.recommended,
   {
-    // Scripts used during development
-    files: ['dev/**/*.ts'],
+    // Config files and scripts used during development
+    files: ['*.js', 'dev/**/*.ts'],
     languageOptions: {
       globals: globals.node
     }
