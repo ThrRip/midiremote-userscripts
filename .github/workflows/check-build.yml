@@ -1,0 +1,88 @@
+name: Check & Build
+run-name: Check & Build (${{ github.ref_name }})
+
+on:
+  push:
+    paths:
+      - '.github/**'
+      - 'dev/**'
+      - 'src/**'
+      - 'eslint.config.js'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'tsconfig.json'
+
+env:
+  MIDIREMOTE_API_REF: 1.1-cubase-14.0.20
+  PNPM_VERSION: 10
+
+jobs:
+  check:
+    name: Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Setup the MIDI Remote API
+        uses: actions/checkout@v4
+        with:
+          repository: ThrRip/midiremote_api_v1
+          ref: ${{ env.MIDIREMOTE_API_REF }}
+          token: ${{ secrets.MIDIREMOTE_API_REPO_PAT }}
+          path: .api/v1/
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: ${{ env.PNPM_VERSION }}
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: package.json
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+      - name: Install dependencies
+        run: pnpm install
+      - name: Run ESLint
+        run: pnpm run lint
+      - name: Check types
+        run: pnpm run typecheck
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Setup the MIDI Remote API
+        uses: actions/checkout@v4
+        with:
+          repository: ThrRip/midiremote_api_v1
+          ref: ${{ env.MIDIREMOTE_API_REF }}
+          token: ${{ secrets.MIDIREMOTE_API_REPO_PAT }}
+          path: .api/v1/
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: ${{ env.PNPM_VERSION }}
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: package.json
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+      - name: Install dependencies
+        run: pnpm install
+      - name: Build user scripts
+        run: pnpm run build
+      - name: Prepare the build artifact
+        id: prepare-artifact
+        run: |
+          owner_repo=$(echo ${{ github.repository }} | sed "s@/@-@g")
+          mkdir -p artifact/$owner_repo
+          mv dist/* artifact/$owner_repo/
+          echo owner-repo=$owner_repo >> $GITHUB_OUTPUT
+      - name: Upload the build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.prepare-artifact.outputs.owner-repo }}-dist-${{ github.ref_name }}-${{ github.sha }}
+          path: artifact

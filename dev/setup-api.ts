@@ -22,6 +22,11 @@ import path from 'path'
 
 import { getUserDocsPath } from './common.js'
 
+// Assume that the API was already set up in CI/CD environments
+if (process.env.CI === 'true') {
+  process.exit()
+}
+
 const platform = os.platform()
 
 assert.ok(

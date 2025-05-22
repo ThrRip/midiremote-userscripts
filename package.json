@@ -11,6 +11,8 @@
   "scripts": {
     "build": "tsc -p src",
     "deploy": "node dev/install-dist.js",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit && tsc -p src --noEmit",
     "postinstall": "tsc && node dev/setup-api.js"
   },
   "devDependencies": {
