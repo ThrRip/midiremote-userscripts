@@ -3,6 +3,8 @@ run-name: Check & Build (${{ github.ref_name }})
 
 on:
   push:
+    branches-ignore:
+      - main
     paths:
       - '.github/**'
       - 'dev/**'
@@ -11,6 +13,15 @@ on:
       - 'package.json'
       - 'pnpm-lock.yaml'
       - 'tsconfig.json'
+  workflow_call:
+    secrets:
+      MIDIREMOTE_API_REPO_PAT:
+        required: true
+    outputs:
+      owner-repo:
+        value: ${{ jobs.build.outputs.owner-repo }}
+      artifact-id:
+        value: ${{ jobs.build.outputs.artifact-id }}
 
 env:
   MIDIREMOTE_API_REF: 1.1-cubase-14.0.20
@@ -50,6 +61,9 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    outputs:
+      owner-repo: ${{ steps.prepare-artifact.outputs.owner-repo }}
+      artifact-id: ${{ steps.upload-artifact.outputs.artifact-id }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -82,6 +96,7 @@ jobs:
           mv dist/* artifact/$owner_repo/
           echo owner-repo=$owner_repo >> $GITHUB_OUTPUT
       - name: Upload the build artifact
+        id: upload-artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.prepare-artifact.outputs.owner-repo }}-dist-${{ github.ref_name }}-${{ github.sha }}
